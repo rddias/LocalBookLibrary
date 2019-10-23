@@ -4,16 +4,18 @@ from datetime import date
 
 # Create your models here.
 
+
 class Genre(models.Model):
     """Model representing a book genre."""
     name = models.CharField(max_length=200, help_text='Enter a book genre (e.g. Science Fiction)')
-	
+
     def __str__(self):
         """String for representing the Model object."""
         return self.name
-		
+
 
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
+
 
 class Book(models.Model):
     """Model representing a book (but not a specific copy of a book)."""
@@ -29,7 +31,7 @@ class Book(models.Model):
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(Genre, help_text='Select a genre for this book')
-	
+
     language = models.ForeignKey('Language', on_delete=models.SET_NULL, null=True)
     
     def display_genre(self):
@@ -37,7 +39,7 @@ class Book(models.Model):
         return ', '.join(genre.name for genre in self.genre.all()[:3])
     
     display_genre.short_description = 'Genre'
-	
+
     def __str__(self):
         """String for representing the Model object."""
         return self.title
@@ -45,9 +47,10 @@ class Book(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this book."""
         return reverse('book-detail', args=[str(self.id)])
-		
+
 
 import uuid # Required for unique book instances
+
 
 class BookInstance(models.Model):
     """Model representing a specific copy of a book (i.e. that can be borrowed from the library)."""
@@ -77,7 +80,7 @@ class BookInstance(models.Model):
         if self.due_back and date.today() > self.due_back:
             return True
         return False
-	
+
     class Meta:
         ordering = ['due_back']
         permissions = (("can_mark_returned", "Set book as returned"),)  
@@ -85,8 +88,8 @@ class BookInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.id} ({self.book.title})'
-		
-		
+
+
 class Author(models.Model):
     """Model representing an author."""
     first_name = models.CharField(max_length=100)
@@ -104,7 +107,7 @@ class Author(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
-		
+
 
 class Language(models.Model):
     """Model representing a Language (e.g. English, French, Japanese, etc.)"""
